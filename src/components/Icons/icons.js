@@ -137,10 +137,6 @@ import { faGithub } from "@fortawesome/free-brands-svg-icons";
 const icons = {
   icons: faIcons,
   user: faUser,
-  quickTask: faList,
-  task: faList,
-  subtask: faStream,
-  quickNote: faStickyNote,
   note: faStickyNote,
   quickFile: faFile,
   file: faFile,
