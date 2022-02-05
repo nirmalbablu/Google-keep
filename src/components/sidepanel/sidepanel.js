@@ -32,7 +32,8 @@ const SidePanelWrapper = styled.div`
 const menuItems = [
   {
     name: "Notes",
-    icon: "note"
+    icon: "note",
+    changeurl: "/notes"
   },
   {
     name: "Reminders",
@@ -60,6 +61,7 @@ const Sidepanel = () => {
           <div
             className={`menu-item  ${name === "Notes" ? "menu-active" : ""}`}
             key={index}
+            onClick={() => (window.location.href = name.toLocaleLowerCase())}
           >
             <div className="icon">
               <Icon name={icon} />

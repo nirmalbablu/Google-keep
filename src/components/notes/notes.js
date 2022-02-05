@@ -135,9 +135,9 @@ const Notes = ({
         <input defaultValue={title} />
         <input defaultValue={description} />
         <div className="note-icons">
-          <Icon />
-          <Icon />
-          <Icon />
+          <Icon name="alert" />
+          <Icon name="invite" />
+          <Icon name="atom" />
           <Icon name="image" />
           <Icon name="archive" onClick={() => deleteNote("archive")} />
 
@@ -146,7 +146,7 @@ const Notes = ({
               <Icon name="moreV" />
             </DropdownToggle>
             <DropdownMenuStyle open={open}>
-              <DropdownItemStyle onClick={()=>deleteNote()}>
+              <DropdownItemStyle onClick={() => deleteNote()}>
                 Delete Note
               </DropdownItemStyle>
               <DropdownItemStyle>Add Drawing</DropdownItemStyle>

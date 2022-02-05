@@ -44,7 +44,7 @@ const Mainpage = () => {
           } */}
 
           <PublicRoute component={Login} path="/login" />
-          <PrivateRoute exact component={Dashboard} path="/" />
+          <PrivateRoute component={Dashboard} path="/" />
         </Switch>
       </Router>
     </React.Fragment>

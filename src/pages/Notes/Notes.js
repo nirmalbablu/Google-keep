@@ -6,7 +6,7 @@ import Axios from "axios";
 import {  useQuery } from '@apollo/client';
 import { getAllTasks } from "../../graphql";
 
-const NotesContainer = styled.div`
+export const NotesContainer = styled.div`
   flex-basis: 0;
   flex-grow: 1;
   height: 100%;
@@ -20,7 +20,7 @@ const AddTaskWrapper = styled.div`
   align-items: center;
 `;
 
-const NotesList = styled.div`
+export const NotesList = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: flex-start;

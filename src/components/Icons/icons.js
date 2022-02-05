@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Tooltip } from "reactstrap";
 import {
   faUser,
   faUsers,
@@ -289,12 +290,15 @@ const Icon = ({ name = "icons", fontSize, color = "grey", ...props }) => {
   };
 
   return (
-    <StyledIcon
-      {...props}
-      icon={icons[name] || faIcons}
-      fontSize={fontSize}
-      $color={getColor}
-    />
+    <Tooltip placement="bottom" isOpen={false}>
+      <StyledIcon
+        {...props}
+        icon={icons[name] || faIcons}
+        fontSize={fontSize}
+        $color={getColor}
+        id={name}
+      />
+    </Tooltip>
   );
 };
 
