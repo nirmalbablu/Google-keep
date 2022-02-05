@@ -5,15 +5,17 @@ import {
   Dropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem
+  DropdownItem,
 } from "reactstrap";
 import Axios from "axios";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import { useMutation } from "@apollo/client";
+import { updateTask } from "../../graphql";
 
 const NoteBox = styled.div`
   min-width: 18rem;
   border: 1px solid rgb(128, 128, 128, 0.3);
-  background-color: ${props => (props.color ? props.color : "white")};
+  background-color: ${(props) => (props.color ? props.color : "white")};
   border-radius: 5px;
   box-shadow: 3px 4px 5px 2px grey;
   display: flex;
@@ -30,7 +32,7 @@ const NoteBox = styled.div`
   }
 `;
 const DropdownMenuStyle = styled(DropdownMenu)`
-  display: ${props => (props.open ? "flex" : "none")};
+  display: ${(props) => (props.open ? "flex" : "none")};
   flex-direction: column;
   border: 1px solid rgb(128, 128, 128, 0.3);
   border-radius: 5px;
@@ -58,37 +60,78 @@ const Notes = ({
   description = "description",
   color = "white",
   id = "",
-  setRefetch = () => {}
+  setRefetch = () => {},
 }) => {
   const [open, setOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [updatetask] = useMutation(updateTask);
   const deleteNote = useCallback(
     async (type = "delete") => {
       let data =
         type === "delete"
           ? {
-              isDeleted: true
+              isDeleted: true,
             }
           : {
-              isArchived: true
+              isArchived: true,
             };
-      try {
-        let result = await Axios.patch(`/tasks/${id}`, data, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`
+
+      console.log(data);
+
+      updatetask({
+        variables: {
+          id,
+          body: data,
+        },
+        optimisticResponse: {
+          __typename: "Mutation",
+          updateTask: {
+            __typename: "Task",
+            _id: Math.random(),
+            isDeleted: data?.isDeleted || false,
+            isArchived: data?.isArchived || false,
+          },
+        },
+        update: (store, { data: { updateTask } }) => {
+          if (updateTask.isDeleted) {
+            store.modify({
+              id: store.identify({ id: id, __typename: "Task" }),
+              fields: {
+                isDeleted() {
+                  return updateTask.isDeleted;
+                },
+              },
+            });
+          } else {
+            store.modify({
+              id: store.identify({ id: id, __typename: "Task" }),
+              fields: {
+                isArchived() {
+                  return updateTask.isArchived;
+                },
+              },
+            });
           }
-        });
-        setRefetch(prev => !prev);
-        console.log(result);
-      } catch (e) {
-        console.error(e);
-      }
+        },
+      });
+
+      // try {
+      //   let result = await Axios.patch(`/tasks/${id}`, data, {
+      //     headers: {
+      //       Authorization: `Bearer ${localStorage.getItem("token")}`
+      //     }
+      //   });
+      //   setRefetch(prev => !prev);
+      //   console.log(result);
+      // } catch (e) {
+      //   console.error(e);
+      // }
     },
     [id, setRefetch]
   );
   return (
     <>
-      <NoteBox color={color} onClick={() => setShowModal(true)}>
+      <NoteBox color={color}>
         <input defaultValue={title} />
         <input defaultValue={description} />
         <div className="note-icons">
@@ -98,12 +141,12 @@ const Notes = ({
           <Icon name="image" />
           <Icon name="archive" onClick={() => deleteNote("archive")} />
 
-          <Dropdown isOpen={open} toggle={() => setOpen(prev => !prev)}>
+          <Dropdown isOpen={open} toggle={() => setOpen((prev) => !prev)}>
             <DropdownToggle>
               <Icon name="moreV" />
             </DropdownToggle>
             <DropdownMenuStyle open={open}>
-              <DropdownItemStyle onClick={deleteNote}>
+              <DropdownItemStyle onClick={()=>deleteNote()}>
                 Delete Note
               </DropdownItemStyle>
               <DropdownItemStyle>Add Drawing</DropdownItemStyle>
@@ -114,34 +157,7 @@ const Notes = ({
           </Dropdown>
         </div>
       </NoteBox>
-      <StyleModal isOpen={showModal} toggle={() => setShowModal(false)}>
-        <NoteBox color={color}>
-          <input defaultValue={title} />
-          <input defaultValue={description} />
-          <div className="note-icons">
-            <Icon />
-            <Icon />
-            <Icon />
-            <Icon name="image" />
-            <Icon name="archive" onClick={() => deleteNote("archive")} />
-
-            <Dropdown isOpen={open} toggle={() => setOpen(prev => !prev)}>
-              <DropdownToggle>
-                <Icon name="moreV" />
-              </DropdownToggle>
-              <DropdownMenuStyle open={open}>
-                <DropdownItemStyle onClick={deleteNote}>
-                  Delete Note
-                </DropdownItemStyle>
-                <DropdownItemStyle>Add Drawing</DropdownItemStyle>
-                <DropdownItemStyle>Make a copy</DropdownItemStyle>
-                <DropdownItemStyle>Show checkboxes</DropdownItemStyle>
-                <DropdownItemStyle>Copy to Google docs</DropdownItemStyle>
-              </DropdownMenuStyle>
-            </Dropdown>
-          </div>
-        </NoteBox>
-      </StyleModal>
+     
     </>
   );
 };

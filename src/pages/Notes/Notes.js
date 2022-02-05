@@ -3,6 +3,8 @@ import styled from "styled-components";
 import TaskInputBar from "../../components/TaskInputBar/taskinputbar";
 import NoteBox from "../../components/notes/notes";
 import Axios from "axios";
+import {  useQuery } from '@apollo/client';
+import { getAllTasks } from "../../graphql";
 
 const NotesContainer = styled.div`
   flex-basis: 0;
@@ -27,32 +29,16 @@ const NotesList = styled.div`
   gap: 20px;
 `;
 export const Notes = () => {
-  const [notes, setNotes] = useState(null);
-  const [refetch, setRefetch] = useState(false);
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        let result = await Axios.get("/tasks?skip=0&limit=100", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`
-          }
-        });
-        setNotes(result.data);
-      } catch (e) {
-        console.error(e);
-      }
-    }
-    fetchData();
-  }, [refetch]);
+  const{data, loading,error}=useQuery(getAllTasks);
+ 
   return (
     <NotesContainer>
       <AddTaskWrapper>
-        <TaskInputBar setRefetch={setRefetch} />
+        <TaskInputBar  />
       </AddTaskWrapper>
-      {notes && (
+      {data && (
         <NotesList>
-          {console.log(notes)}
-          {notes
+          {data.tasks
             .filter(val => {
               return val?.isDeleted === false;
             })
@@ -65,7 +51,6 @@ export const Notes = () => {
                   color={note?.color}
                   key={note?._id || index}
                   id={note?._id}
-                  setRefetch={setRefetch}
                 />
               );
             })}
