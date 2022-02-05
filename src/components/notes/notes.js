@@ -78,8 +78,8 @@ const Notes = ({
             Authorization: `Bearer ${localStorage.getItem("token")}`
           }
         });
-        setRefetch(prev => !prev);
         console.log(result);
+        setRefetch(prev => !prev);
       } catch (e) {
         console.error(e);
       }
@@ -92,9 +92,9 @@ const Notes = ({
         <input defaultValue={title} />
         <input defaultValue={description} />
         <div className="note-icons">
-          <Icon />
-          <Icon />
-          <Icon />
+          <Icon name="alert" />
+          <Icon name="invite" />
+          <Icon name="atom" />
           <Icon name="image" />
           <Icon name="archive" onClick={() => deleteNote("archive")} />
 
@@ -103,7 +103,7 @@ const Notes = ({
               <Icon name="moreV" />
             </DropdownToggle>
             <DropdownMenuStyle open={open}>
-              <DropdownItemStyle onClick={deleteNote}>
+              <DropdownItemStyle onClick={() => deleteNote()}>
                 Delete Note
               </DropdownItemStyle>
               <DropdownItemStyle>Add Drawing</DropdownItemStyle>
@@ -114,12 +114,12 @@ const Notes = ({
           </Dropdown>
         </div>
       </NoteBox>
-      <StyleModal isOpen={showModal} toggle={() => setShowModal(false)}>
+      {/* <StyleModal isOpen={showModal} toggle={() => setShowModal(false)}>
         <NoteBox color={color}>
           <input defaultValue={title} />
           <input defaultValue={description} />
           <div className="note-icons">
-            <Icon />
+            <Icon name="alert" />
             <Icon />
             <Icon />
             <Icon name="image" />
@@ -141,7 +141,7 @@ const Notes = ({
             </Dropdown>
           </div>
         </NoteBox>
-      </StyleModal>
+      </StyleModal> */}
     </>
   );
 };

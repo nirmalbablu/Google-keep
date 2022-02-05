@@ -4,7 +4,7 @@ import TaskInputBar from "../../components/TaskInputBar/taskinputbar";
 import NoteBox from "../../components/notes/notes";
 import Axios from "axios";
 
-const NotesContainer = styled.div`
+export const NotesContainer = styled.div`
   flex-basis: 0;
   flex-grow: 1;
   height: 100%;
@@ -18,7 +18,7 @@ const AddTaskWrapper = styled.div`
   align-items: center;
 `;
 
-const NotesList = styled.div`
+export const NotesList = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -51,7 +51,6 @@ export const Notes = () => {
       </AddTaskWrapper>
       {notes && (
         <NotesList>
-          {console.log(notes)}
           {notes
             .filter(val => {
               return val?.isDeleted === false;

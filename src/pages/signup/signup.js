@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./signup.css";
 import Axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -64,6 +64,7 @@ const Signup = () => {
       try {
         let res = await Axios.post("/users", data);
         localStorage.setItem("token", res.data.token);
+        window.location.href = "/";
       } catch (e) {
         console.log(e);
       }
