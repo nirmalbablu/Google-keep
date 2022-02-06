@@ -52,21 +52,13 @@ const Signup = () => {
         email,
         password
       };
-      // Axios.post("/users", data)
-      //   .then(res => {
-      //     console.log(res);
-      //     localStorage.setItem("token", res.data.token);
-      //     console.log(localStorage.getItem("token"));
-      //   })
-      //   .catch(e => {
-      //     console.log(e);
-      //   });
+
       try {
         let res = await Axios.post("/users", data);
         localStorage.setItem("token", res.data.token);
         window.location.href = "/";
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     } else {
       alert("faliure");

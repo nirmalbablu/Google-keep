@@ -1,4 +1,4 @@
-import React from "react";
+import React, { createContext, useState } from "react";
 import {
   BrowserRouter as Router,
   Redirect,
@@ -19,10 +19,13 @@ const Container = styled.div`
   height: calc(100vh - 3rem);
   display: flex;
 `;
+export const context = createContext();
+
 const Dashboard = () => {
+  const [search, setSearch] = useState("");
   return (
-    <>
-      <Navbar />
+    <context.Provider value={{ search, setSearch }}>
+      <Navbar setSearch={setSearch} search={search} />
       <Container>
         <Sidepanel />
         <Switch>
@@ -35,7 +38,7 @@ const Dashboard = () => {
         </Switch>
         {/* <NotesPage /> */}
       </Container>
-    </>
+    </context.Provider>
   );
 };
 

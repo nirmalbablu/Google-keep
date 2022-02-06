@@ -5,34 +5,41 @@ import {
   Dropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem,
+  DropdownItem
 } from "reactstrap";
-import Axios from "axios";
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import { useMutation } from "@apollo/client";
 import { updateTask } from "../../graphql";
 
 const NoteBox = styled.div`
   min-width: 18rem;
   border: 1px solid rgb(128, 128, 128, 0.3);
-  background-color: ${(props) => (props.color ? props.color : "white")};
+  background-color: ${props => (props.color ? props.color : "white")};
   border-radius: 5px;
   box-shadow: 3px 4px 5px 2px grey;
   display: flex;
   flex-direction: column;
   height: max-content;
+  opacity: 0.8;
   padding: 10px;
   .note-icons {
     display: flex;
     justify-content: space-between;
   }
+  input:first-child {
+    width: 95%;
+  }
   input {
     border: none;
     outline: none;
+    font-size: 16px;
+  }
+  :hover {
+    opacity: 1;
+    box-shadow: 3px 4px 5px 2px rgba(0, 0, 0, 0.7);
   }
 `;
 const DropdownMenuStyle = styled(DropdownMenu)`
-  display: ${(props) => (props.open ? "flex" : "none")};
+  display: ${props => (props.open ? "flex" : "none")};
   flex-direction: column;
   border: 1px solid rgb(128, 128, 128, 0.3);
   border-radius: 5px;
@@ -50,38 +57,35 @@ const DropdownItemStyle = styled(DropdownItem)`
     color: white;
   }
 `;
-const StyleModal = styled(Modal)`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-`;
+
 const Notes = ({
   title = "Title",
   description = "description",
   color = "white",
   id = "",
-  setRefetch = () => {},
+  isPinned = false
 }) => {
   const [open, setOpen] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const [updatetask] = useMutation(updateTask);
   const deleteNote = useCallback(
     async (type = "delete") => {
       let data =
         type === "delete"
           ? {
-              isDeleted: true,
+              isDeleted: true
+            }
+          : type === "pinned"
+          ? {
+              isPinned: !isPinned
             }
           : {
-              isArchived: true,
+              isArchived: true
             };
-
-      console.log(data);
 
       updatetask({
         variables: {
           id,
-          body: data,
+          body: data
         },
         optimisticResponse: {
           __typename: "Mutation",
@@ -90,7 +94,8 @@ const Notes = ({
             _id: Math.random(),
             isDeleted: data?.isDeleted || false,
             isArchived: data?.isArchived || false,
-          },
+            isPinned: data?.isPinned || false
+          }
         },
         update: (store, { data: { updateTask } }) => {
           if (updateTask.isDeleted) {
@@ -99,40 +104,45 @@ const Notes = ({
               fields: {
                 isDeleted() {
                   return updateTask.isDeleted;
-                },
-              },
+                }
+              }
             });
-          } else {
+          } else if (updateTask.isArchived) {
             store.modify({
               id: store.identify({ id: id, __typename: "Task" }),
               fields: {
                 isArchived() {
                   return updateTask.isArchived;
-                },
-              },
+                }
+              }
+            });
+          } else {
+            store.modify({
+              id: store.identify({ id: id, __typename: "Task" }),
+              fields: {
+                isPinned() {
+                  return updateTask.isPinned;
+                }
+              }
             });
           }
-        },
+        }
       });
-
-      // try {
-      //   let result = await Axios.patch(`/tasks/${id}`, data, {
-      //     headers: {
-      //       Authorization: `Bearer ${localStorage.getItem("token")}`
-      //     }
-      //   });
-      //   setRefetch(prev => !prev);
-      //   console.log(result);
-      // } catch (e) {
-      //   console.error(e);
-      // }
     },
-    [id, setRefetch]
+    [id, updatetask]
   );
   return (
     <>
       <NoteBox color={color}>
-        <input defaultValue={title} />
+        <div>
+          <input defaultValue={title} />
+          <Icon
+            name="pin"
+            toolTipText={isPinned ? "Unpin" : "Pin"}
+            color={isPinned ? "black" : "grey"}
+            onClick={() => deleteNote("pinned")}
+          />
+        </div>
         <input defaultValue={description} />
         <div className="note-icons">
           <Icon name="alert" />
@@ -141,9 +151,9 @@ const Notes = ({
           <Icon name="image" />
           <Icon name="archive" onClick={() => deleteNote("archive")} />
 
-          <Dropdown isOpen={open} toggle={() => setOpen((prev) => !prev)}>
+          <Dropdown isOpen={open} toggle={() => setOpen(prev => !prev)}>
             <DropdownToggle>
-              <Icon name="moreV" />
+              <Icon name="moreV" toolTipText="more" />
             </DropdownToggle>
             <DropdownMenuStyle open={open}>
               <DropdownItemStyle onClick={() => deleteNote()}>
@@ -157,7 +167,6 @@ const Notes = ({
           </Dropdown>
         </div>
       </NoteBox>
-     
     </>
   );
 };

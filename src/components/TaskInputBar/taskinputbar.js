@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import Icon from "../Icons/icons";
 import Axios from "axios";
@@ -61,6 +61,23 @@ const TaskInputBar = () => {
   const DescriptionRef = useRef();
   const [addtask] = useMutation(addNote);
 
+  const handleKeyDown = e => {
+    if (
+      e.key === "Enter" &&
+      titleRef.current.value &&
+      DescriptionRef.current.value
+    ) {
+      handleAddNote();
+      setAddTask(!addTask);
+    }
+    if (e.key === "Escape") setAddTask(!addTask);
+  };
+  useEffect(() => {
+    window.removeEventListener("keydown", handleKeyDown);
+
+    addTask && window.addEventListener("keydown", handleKeyDown);
+  });
+
   const handleAddNote = useCallback(async () => {
     const { value } = titleRef.current;
     const { value: DescValue } = DescriptionRef.current;
@@ -68,11 +85,11 @@ const TaskInputBar = () => {
     let data = {
       title: value,
       description: DescValue,
-      color: "white",
+      color: "white"
     };
     addtask({
       variables: {
-        body: data,
+        body: data
       },
       optimisticResponse: {
         __typename: "Mutation",
@@ -83,35 +100,34 @@ const TaskInputBar = () => {
           description: data.description,
           labels: [],
           createdAt: "dcdcdcd",
-          color: "white",
-        },
+          color: "white"
+        }
       },
       update: (store, { data: { addTask } }) => {
-       const data = store.readQuery({
-         query:getAllTasks
-       })
-       console.log(data);
-       const tmpdata = {
-        __typename: addTask.__typename,
-        _id: addTask._id,
-        title: addTask.title,
-        description: addTask.description,
-        createdAt: addTask.createdAt,
-        color: addTask.color,
-        completed:addTask.completed || false,
-        isDeleted:addTask.isDeleted || false,
-        isArchived:addTask.isArchived || false,
-        isPinned:false,
-       }
+        const data = store.readQuery({
+          query: getAllTasks
+        });
+        const tmpdata = {
+          __typename: addTask.__typename,
+          _id: addTask._id,
+          title: addTask.title,
+          description: addTask.description,
+          createdAt: addTask.createdAt,
+          color: addTask.color,
+          completed: addTask.completed || false,
+          isDeleted: addTask.isDeleted || false,
+          isArchived: addTask.isArchived || false,
+          isPinned: false
+        };
 
-       const newData = produce(data,draftState =>{
-         draftState.tasks.push(tmpdata)
-       })
+        const newData = produce(data, draftState => {
+          draftState.tasks.push(tmpdata);
+        });
         store.writeQuery({
-        query:getAllTasks,
-        data:newData
-      })
-      },
+          query: getAllTasks,
+          data: newData
+        });
+      }
     });
 
     // let result = await Axios.post("/tasks", data, {
@@ -124,7 +140,7 @@ const TaskInputBar = () => {
   return (
     <>
       {!addTask ? (
-        <TaskBarWrapper onClick={() => setAddTask((prev) => !prev)}>
+        <TaskBarWrapper onClick={() => setAddTask(prev => !prev)}>
           <input placeholder="Take a note..." />
           <div className="icons">
             <Icon name="checkBox" />

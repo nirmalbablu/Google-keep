@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Tooltip } from "reactstrap";
 import {
   faUser,
   faUsers,
@@ -134,6 +133,7 @@ import {
   faArchive
 } from "@fortawesome/free-solid-svg-icons";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import { Tooltip } from "@material-ui/core";
 
 const icons = {
   icons: faIcons,
@@ -280,7 +280,13 @@ const StyledIcon = styled(FontAwesomeIcon)`
 `;
 
 /** Plain svg icon with optional color. */
-const Icon = ({ name = "icons", fontSize, color = "grey", ...props }) => {
+const Icon = ({
+  name = "icons",
+  toolTipText = "",
+  fontSize,
+  color = "grey",
+  ...props
+}) => {
   const getColor = () => {
     if (typeof color === "object") {
       return `rgb(${color?.red}, ${color?.green}, ${color?.blue}, ${color?.alpha})`;
@@ -290,14 +296,17 @@ const Icon = ({ name = "icons", fontSize, color = "grey", ...props }) => {
   };
 
   return (
-    <Tooltip placement="bottom" isOpen={false}>
-      <StyledIcon
-        {...props}
-        icon={icons[name] || faIcons}
-        fontSize={fontSize}
-        $color={getColor}
-        id={name}
-      />
+    <Tooltip title={toolTipText || name}>
+      <span>
+        <StyledIcon
+          {...props}
+          icon={icons[name] || faIcons}
+          fontSize={fontSize}
+          $color={getColor}
+          id={name}
+        />
+      </span>
+      {/* <span>icon</span> */}
     </Tooltip>
   );
 };

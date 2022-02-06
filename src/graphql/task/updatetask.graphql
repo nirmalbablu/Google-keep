@@ -9,5 +9,6 @@ mutation UpdateTask($id: ID!, $body: String!) {
     _id
     isDeleted
     isArchived
+    isPinned
   }
 }

@@ -52,14 +52,3 @@ const Mainpage = () => {
 };
 
 export default Mainpage;
-
-//destructuring
-// let a = {
-//   name: "purushoth",
-//   age: 23
-// };
-// console.log(a.name);
-// console.log(a.age);
-// const { name, age } = a;
-// console.log(name);
-// console.log(age);

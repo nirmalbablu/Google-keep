@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 import Icon from "../Icons/icons";
 
@@ -17,6 +18,12 @@ const SidePanelWrapper = styled.div`
     justify-content: flex-start;
     align-items: center;
   }
+  a {
+    width: 100%;
+    text-decoration: none;
+    color: black;
+    display: block;
+  }
   .menu-active {
     background-color: #feefc3;
     border-top-right-radius: 25px;
@@ -32,8 +39,7 @@ const SidePanelWrapper = styled.div`
 const menuItems = [
   {
     name: "Notes",
-    icon: "note",
-    changeurl: "/notes"
+    icon: "note"
   },
   {
     name: "Reminders",
@@ -54,20 +60,24 @@ const menuItems = [
 ];
 
 const Sidepanel = () => {
+  const { pathname } = window.location;
+  let url = pathname.slice(1);
   return (
     <SidePanelWrapper>
       {menuItems.map(({ name, icon }, index) => {
         return (
-          <div
-            className={`menu-item  ${name === "Notes" ? "menu-active" : ""}`}
-            key={index}
-            onClick={() => (window.location.href = name.toLocaleLowerCase())}
-          >
-            <div className="icon">
-              <Icon name={icon} />
+          <Link to={name.toLocaleLowerCase()} key={index}>
+            <div
+              className={`menu-item  ${
+                name.toLocaleLowerCase() === url ? "menu-active" : ""
+              }`}
+            >
+              <div className="icon">
+                <Icon name={icon} />
+              </div>
+              <div className="item-name">{name}</div>
             </div>
-            <div className="item-name">{name}</div>
-          </div>
+          </Link>
         );
       })}
     </SidePanelWrapper>

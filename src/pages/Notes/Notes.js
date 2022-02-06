@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 import TaskInputBar from "../../components/TaskInputBar/taskinputbar";
 import NoteBox from "../../components/notes/notes";
-import Axios from "axios";
-import {  useQuery } from '@apollo/client';
+import { useQuery } from "@apollo/client";
 import { getAllTasks } from "../../graphql";
+import { context } from "../Dashboard/dashboard";
+import Notesloading from "../../components/loading/notes";
 
 export const NotesContainer = styled.div`
   flex-basis: 0;
@@ -25,37 +26,78 @@ export const NotesList = styled.div`
   flex-direction: row;
   justify-content: flex-start;
   padding: 20px;
+  flex-grow: 1;
+  align-content: flex-start;
+  overflow: auto;
   flex-wrap: wrap;
   gap: 20px;
 `;
-export const Notes = () => {
-  const{data, loading,error}=useQuery(getAllTasks);
- 
+export const Notes = props => {
+  const { search } = useContext(context);
+
+  const { data, loading, error } = useQuery(getAllTasks);
+
   return (
     <NotesContainer>
       <AddTaskWrapper>
-        <TaskInputBar  />
+        <TaskInputBar />
       </AddTaskWrapper>
-      {data && (
+
+      {
         <NotesList>
-          {data.tasks
-            .filter(val => {
-              return val?.isDeleted === false;
-            })
-            .filter(val => !val?.isArchived)
-            .map((note, index) => {
-              return (
-                <NoteBox
-                  title={note.title}
-                  description={note.description}
-                  color={note?.color}
-                  key={note?._id || index}
-                  id={note?._id}
-                />
-              );
-            })}
+          {loading ? (
+            <Notesloading count={20} />
+          ) : (
+            <>
+              {data.tasks
+                .filter(val => {
+                  return val?.isDeleted === false;
+                })
+                .filter(val => !val?.isArchived)
+                .filter(val => val.isPinned)
+                .filter(
+                  val =>
+                    val.title.includes(search) ||
+                    val.description.includes(search)
+                )
+                .map((note, index) => {
+                  return (
+                    <NoteBox
+                      title={note.title}
+                      description={note.description}
+                      color={note?.color}
+                      key={note?._id || index}
+                      id={note?._id}
+                      isPinned
+                    />
+                  );
+                })}
+              {data.tasks
+                .filter(val => {
+                  return val?.isDeleted === false;
+                })
+                .filter(val => !val?.isArchived)
+                .filter(val => !val.isPinned)
+                .filter(
+                  val =>
+                    val.title.includes(search) ||
+                    val.description.includes(search)
+                )
+                .map((note, index) => {
+                  return (
+                    <NoteBox
+                      title={note.title}
+                      description={note.description}
+                      color={note?.color}
+                      key={note?._id || index}
+                      id={note?._id}
+                    />
+                  );
+                })}
+            </>
+          )}
         </NotesList>
-      )}
+      }
     </NotesContainer>
   );
 };

@@ -1,10 +1,12 @@
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import Icon from "../Icons/icons";
 import Keep from "../../Assets/keep.png";
 import { NavbarWrapper } from "./navbarstyles";
+import { context } from "../../pages/Dashboard/dashboard";
 
 const Navbar = () => {
-  const [showClose, setshowClose] = useState(false);
+  const { search, setSearch } = useContext(context);
+  const searchRef = useRef();
   return (
     <NavbarWrapper>
       <div className="nav-title-wrapper">
@@ -13,8 +15,26 @@ const Navbar = () => {
         <span>Keep</span>
         <div className="search-wrapper">
           <Icon name="search" />
-          <input onChange={e => setshowClose(e.target.value ? true : false)} />
-          {showClose && <Icon name="close" />}
+          <input
+            ref={searchRef}
+            onChange={e => setSearch(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === "Escape") {
+                setSearch("");
+                searchRef.current.focus();
+              }
+            }}
+            value={search}
+          />
+          {search && (
+            <Icon
+              name="close"
+              onClick={() => {
+                setSearch("");
+                searchRef.current.focus();
+              }}
+            />
+          )}
         </div>
       </div>
       <div className="icons-wrapper">
