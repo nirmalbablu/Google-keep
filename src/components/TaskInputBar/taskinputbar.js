@@ -5,6 +5,7 @@ import Axios from "axios";
 import { useMutation } from "@apollo/client";
 import { addTask as addNote, getAllTasks } from "../../graphql";
 import produce from "immer";
+import { Tooltip } from "@material-ui/core";
 const TaskBarWrapper = styled.div`
   width: 40rem;
   height: 3rem;
@@ -48,6 +49,12 @@ const MoreAddTaskBar = styled.div`
     width: 100%;
     display: flex;
     justify-content: space-between;
+    .close {
+      cursor: pointer;
+      background-color: blue;
+      padding: 5px;
+      border-radius: 3px;
+    }
   }
   .more-inline-icons {
     width: auto;
@@ -151,7 +158,7 @@ const TaskInputBar = () => {
       ) : (
         <MoreAddTaskBar>
           <div className="inline-item">
-            <input placeholder="Title" ref={titleRef} />
+            <input placeholder="Title" ref={titleRef} autoFocus />
             <Icon name="pin" />
           </div>
           <input placeholder="Take a note..." ref={DescriptionRef} />
@@ -166,16 +173,19 @@ const TaskInputBar = () => {
               <Icon name="undo" />
               <Icon name="redo" />
             </div>
-            <span
-              onClick={() => {
-                titleRef.current.value &&
-                  DescriptionRef.current.value &&
-                  handleAddNote();
-                setAddTask(!addTask);
-              }}
-            >
-              Close
-            </span>
+            <Tooltip title="close">
+              <span
+                onClick={() => {
+                  titleRef.current.value &&
+                    DescriptionRef.current.value &&
+                    handleAddNote();
+                  setAddTask(!addTask);
+                }}
+                className="close"
+              >
+                Close
+              </span>
+            </Tooltip>
           </div>
         </MoreAddTaskBar>
       )}
